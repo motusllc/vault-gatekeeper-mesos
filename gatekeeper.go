@@ -161,7 +161,7 @@ func renew(token string, ttl int) error {
 	}
 }
 
-func renew_worker(token string, onUnsealed <-chan struct{}) {
+func renew_worker(token string, onSealed <-chan struct{}) {
 	creationTtl := 0
 	for {
 		r, err := VaultRequest{goreq.Request{
@@ -211,7 +211,8 @@ func renew_worker(token string, onUnsealed <-chan struct{}) {
 							seal()
 							return
 						}
-					case <-onUnsealed:
+					case <-onSealed:
+						log.Println("Vault is sealed, ending renew token loop")
 						return
 					}
 				} else {
