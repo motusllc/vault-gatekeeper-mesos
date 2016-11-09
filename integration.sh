@@ -20,6 +20,8 @@ function run_tests() {
 	# wait for vault to startup
 	sleep 5
 	vault auth-enable userpass
+
+	export VAULT_ADDR="http://localhost:8200"
 	go test -v ./
 }
 

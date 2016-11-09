@@ -140,6 +140,7 @@ func renew(token string, ttl int) error {
 		Method:          "POST",
 		MaxRedirects:    10,
 		RedirectHeaders: true,
+		Timeout: 5000 * time.Millisecond,
 	}.WithHeader("X-Vault-Token", token)}.Do()
 	if err == nil {
 		defer r.Body.Close()
@@ -168,6 +169,7 @@ func renew_worker(token string, onSealed <-chan struct{}) {
 			Uri:             vaultPath("/v1/auth/token/lookup-self", ""),
 			MaxRedirects:    10,
 			RedirectHeaders: true,
+			Timeout: 5000 * time.Millisecond,
 		}.WithHeader("X-Vault-Token", token)}.Do()
 		if err == nil {
 			defer r.Body.Close()
@@ -207,7 +209,7 @@ func renew_worker(token string, onSealed <-chan struct{}) {
 						if err := renew(token, tokenInfo.Data.CreationTtl); err == nil {
 							log.Printf("Renewed token with ttl of %v.", time.Duration(tokenInfo.Data.CreationTtl)*time.Second)
 						} else {
-							log.Println("Failed to renew token. Sealing gatekeeper.")
+							log.Println("Failed to renew token. Sealing gatekeeper. Error: %s", err)
 							seal()
 							return
 						}
