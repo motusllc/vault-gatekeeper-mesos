@@ -154,8 +154,8 @@ func Provide(c *gin.Context) {
 		*/
 		gMT := func(taskId string) (mesosTask, error) {
 			task, err := getMesosTask(taskId)
-			for i := time.Duration(0); i < 3 && err == nil && len(task.Statuses) == 0; i++ {
-				time.Sleep((500 + 250*i) * time.Millisecond)
+			for i := time.Duration(0); i < 10 && err == nil && len(task.Statuses) == 0; i++ {
+				time.Sleep((500 + 500*i) * time.Millisecond)
 				task, err = getMesosTask(taskId)
 			}
 			return task, err
